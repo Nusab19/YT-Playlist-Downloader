@@ -23,11 +23,11 @@ def getPlaylistVideoURLs(playlistUrl):
     return videoUrls
 
 
-def on_progress(stream, chunk, bytesRemaining):
+def onProgress(stream, chunk, bytesRemaining):
     totalSize = stream.filesize
     bytesRemaining = totalSize - bytesRemaining
     percentage = bytesRemaining / totalSize * 100
-    print(f"Progress:   {percentage:.2f}%\r", end="")
+    print(f"Progress    :   {percentage:.2f}%\r", end="")
 
 
 def downloadPlaylist(url: str, itag: int = None, outputFolder: str = "videos"):
@@ -44,10 +44,10 @@ def downloadPlaylist(url: str, itag: int = None, outputFolder: str = "videos"):
     length = len(videos)
     prefixLength = len(str(length))
 
-    print(f"Found {length} videos...\n\n")
+    print(f"\nFound {length} videos...\n")
 
     for index, url in enumerate(videos, 1):
-        video = pytube.YouTube(url, on_progress_callback=on_progress)
+        video = pytube.YouTube(url, on_progress_callback=onProgress)
 
         stream = None
         if itag:
@@ -58,8 +58,8 @@ def downloadPlaylist(url: str, itag: int = None, outputFolder: str = "videos"):
                 progressive=True).get_highest_resolution()
 
         prefix = f"{index:0{prefixLength}}"
-        print(f"Downloading: {prefix} - {video.title}...")
-        print(f"FileSize: {stream.filesize / 1024 / 1024:.2f} MB")
+        print(f"Downloading :   {prefix} - {video.title}...")
+        print(f"FileSize    :   {stream.filesize / 1024 / 1024:.2f} MB")
 
         stream.download(output_path=outputFolder,
                         max_retries=5, filename_prefix=prefix)
