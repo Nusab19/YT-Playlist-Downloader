@@ -42,7 +42,7 @@ def downloadPlaylist(url: str, itag: int = None, outputFolder: str = "videos"):
 
     videos = getPlaylistVideoURLs(url)
     length = len(videos)
-    prefixLength = len(str(length))
+    prefixLength = len(str(length)) + 1
 
     print(f"\nFound {length} videos...\n")
 
@@ -58,8 +58,10 @@ def downloadPlaylist(url: str, itag: int = None, outputFolder: str = "videos"):
                 progressive=True).get_highest_resolution()
 
         prefix = f"{index:0{prefixLength}}"
-        print(f"Downloading :   {prefix} - {video.title}...")
-        print(f"FileSize    :   {stream.filesize / 1024 / 1024:.2f} MB")
+        fileSize = stream.filesize / 1024 / 1024
+        resolution = stream.resolution
+        print(f"No.{prefix} :   {video.title}...")
+        print(f"FileSize    :   {fileSize:.2f} MB @ {resolution}")
 
         stream.download(output_path=outputFolder,
                         max_retries=5, filename_prefix=prefix)
