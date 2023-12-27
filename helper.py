@@ -1,28 +1,6 @@
 import pytube
 
 
-def getVideoItags(url):
-    youtube = pytube.YouTube(url)
-    itags = {i.itag: i.resolution for i in youtube.streams.all()
-             if i.resolution}
-
-    return itags
-
-
-def getItagFromResolution(resolution: str):
-    itags = {'144p': 278, '360p': 243, '720p': 247,
-             '1080p': 248, '480p': 244, '240p': 242}
-
-    return itags.get(resolution)
-
-
-def getPlaylistVideoURLs(playlistUrl):
-    playlist = pytube.Playlist(playlistUrl)
-    videoUrls = playlist.video_urls
-
-    return videoUrls
-
-
 def onProgress(stream, chunk, bytesRemaining):
     totalSize = stream.filesize
     bytesRemaining = totalSize - bytesRemaining
@@ -34,9 +12,9 @@ def downloadPlaylist(url: str, itag: int = None, outputFolder: str = "videos"):
     """Download a playlist from YouTube
 
     Arguments:
-        url {str} -- The playlist URL or video URL with playlist
-        itag {int} -- The itag of the video (default: {None})
-        outputFolder {str} -- The output folder (default: {"videos"})
+        url {str}           -- The playlist URL or video URL with playlist
+        itag {int}          -- The itag of the video (default: None)
+        outputFolder {str}  -- The output folder (default: "videos")
 
     """
 
@@ -67,3 +45,27 @@ def downloadPlaylist(url: str, itag: int = None, outputFolder: str = "videos"):
                         max_retries=5, filename_prefix=prefix)
 
         print("\n")
+
+# --------------------------------------------------
+
+
+def getAvailableResolutions(url):
+    youtube = pytube.YouTube(url)
+    itags = {i.itag: i.resolution for i in youtube.streams.all()
+             if i.resolution}
+
+    return itags
+
+
+def getItagFromResolution(resolution: str):
+    itags = {'144p': 278, '360p': 243, '720p': 247,
+             '1080p': 248, '480p': 244, '240p': 242}
+
+    return itags.get(resolution)
+
+
+def getPlaylistVideoURLs(playlistUrl):
+    playlist = pytube.Playlist(playlistUrl)
+    videoUrls = playlist.video_urls
+
+    return videoUrls
