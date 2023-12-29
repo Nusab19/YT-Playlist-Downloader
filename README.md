@@ -3,6 +3,7 @@
 ## Description
 
 This is a simple python script to download youtube playlist videos. It uses the `pytube` library to download the videos.
+**This is meant to be used in educational purposes only.**
 
 ## WHY?
 
