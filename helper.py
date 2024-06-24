@@ -1,7 +1,7 @@
 import pytube
 
 
-def onProgress(stream, chunk, bytesRemaining):
+def onProgress(stream, _, bytesRemaining):
     totalSize = stream.filesize
     bytesRemaining = totalSize - bytesRemaining
     percentage = bytesRemaining / totalSize * 100
@@ -32,8 +32,7 @@ def downloadPlaylist(url: str, itag: int = None, outputFolder: str = "videos"):
             stream = video.streams.filter(progressive=True).get_by_itag(itag)
 
         if not stream:
-            stream = video.streams.filter(
-                progressive=True).get_highest_resolution()
+            stream = video.streams.filter(progressive=True).get_highest_resolution()
 
         prefix = f"{index:0{prefixLength}}"
         fileSize = stream.filesize / 1024 / 1024
@@ -41,25 +40,27 @@ def downloadPlaylist(url: str, itag: int = None, outputFolder: str = "videos"):
         print(f"No.{prefix} :   {video.title}...")
         print(f"FileSize    :   {fileSize:.2f} MB @ {resolution}")
 
-        stream.download(output_path=outputFolder,
-                        max_retries=5, filename_prefix=prefix)
+        stream.download(output_path=outputFolder, max_retries=5, filename_prefix=prefix)
 
         print("\n")
-
-# --------------------------------------------------
 
 
 def getAvailableResolutions(url):
     youtube = pytube.YouTube(url)
-    itags = {i.itag: i.resolution for i in youtube.streams.all()
-             if i.resolution}
+    itags = {i.itag: i.resolution for i in youtube.streams.all() if i.resolution}
 
     return itags
 
 
 def getItagFromResolution(resolution: str):
-    itags = {'144p': 278, '360p': 243, '720p': 247,
-             '1080p': 248, '480p': 244, '240p': 242}
+    itags = {
+        "144p": 278,
+        "360p": 243,
+        "720p": 247,
+        "1080p": 248,
+        "480p": 244,
+        "240p": 242,
+    }
 
     return itags.get(resolution)
 
@@ -69,3 +70,16 @@ def getPlaylistVideoURLs(playlistUrl):
     videoUrls = playlist.video_urls
 
     return videoUrls
+
+
+def downloadVideo(url: str, outputFolder: str = "Videos", prefix: str = None):
+    video = pytube.YouTube(url, on_progress_callback=onProgress)
+
+    stream = video.streams.filter(progressive=True).get_highest_resolution()
+    fileSize = stream.filesize / 1024 / 1024
+    resolution = stream.resolution
+
+    print(f"Downloading :   {prefix or ''}{video.title}...")
+    print(f"FileSize    :   {fileSize:.2f} MB @ {resolution}")
+
+    stream.download(output_path=outputFolder, max_retries=5, filename_prefix=prefix)
